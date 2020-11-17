@@ -15,79 +15,75 @@ app.get("/repositories", (request, response) => {
 });
 
 app.post("/repositories", (request, response) => {
-  const {title, url, techs} = request.body
-
+  const { title, url, techs} = request.body
   const repository = {
     id: uuid(),
     title,
     url,
     techs,
-    likes:0,
+    likes: 0,
   }
 
   repositories.push(repository)
   return response.json(repository)
  
+ 
 });
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params
-  const {title, url, techs} = request.body
+  const { title, url, techs } = request.body
 
-  const findRepositoryIndex = repositories.findIndex(repository =>{
+  const encontraPosicao =  repositories.findIndex(repository=>
     repository.id === id
-  })
+  )
 
-  if(findRepositoryIndex === -1){
-    return response.status(400).json({ error: 'repo não encontrado' })
+  if(encontraPosicao === -1){
+    return response.status(400).json({error: 'Repository not found'})
   }
-
   const repository = {
     id,
     title,
     url,
     techs,
-    likes: repositories[findRepositoryIndex].likes
-  }
+    likes:  repositories[encontraPosicao].likes
 
-  repositories[findRepositoryIndex] = repository
+  }
+  repositories[encontraPosicao] = repository
 
   return response.json(repository)
+  
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  const { id } = request.params
+ const { id } = request.params
+ const encontraPosicao =  repositories.findIndex(repository=>
+   repository.id === id
+ )
 
-  const findRepositoryIndex = repositories.findIndex(repository =>{
-    repository.id === id
-  })
+ if(encontraPosicao >= 0){
+   repositories.splice(encontraPosicao, 1)
+ } else {
+   return response.status(400).json({error: 'Repository not found'})
+ }
 
-  if(findRepositoryIndex >= 0){
-    repositories.splice(findRepositoryIndex, 1)
-  } else {
-    return response.status(400).json({error: 'repo não encontrado'})
-  }
-  
-  return response.status(204).send()
+ return response.status(204).send()
+
 });
 
 app.post("/repositories/:id/like", (request, response) => {
-  
   const { id } = request.params
-
-  const findRepositoryIndex = repositories.findIndex(repository =>{
+  const encontraPosicao =  repositories.findIndex(repository=>
     repository.id === id
-  })
-
-  if(findRepositoryIndex === -1){
-    return response.status(400).json({ error: 'repo não encontrado' })
+  )
+  if(encontraPosicao === -1){
+    return response.status(400).json({error: 'Repository not found'})
   }
 
-  repositories[findRepositoryIndex].likes++
+  repositories[encontraPosicao].likes++
 
-  return response.json(repositories[findRepositoryIndex])
-
-
+  return response.json(repositories[encontraPosicao])
+  
 });
 
 module.exports = app;
